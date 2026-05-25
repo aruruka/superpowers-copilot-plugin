@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "./hooks/copilot/run-hook.cmd session-start.py"
+      }
+    ]
+  }
+}
