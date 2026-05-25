@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "Custom Copilot plugin marketplace maintained by aruruka.",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "plugins": [
     {
       "name": "superpowers-copilot-plugin",
       "description": "Custom Superpowers skills for GitHub Copilot in VS Code.",
-      "version": "5.2.0",
+      "version": "5.2.1",
       "source": "./plugins/superpowers-copilot-plugin"
     }
   ]
