@@ -2,6 +2,8 @@
 
 This path is for the Windows-side Copilot plugin store used by VS Code. It is separate from the native Superpowers installers for Claude Code, Cursor, and the CLI harnesses.
 
+This plugin is hook-free by design. SessionStart hooks are not required or registered.
+
 ## What you install
 
 You are not installing a package from a marketplace. You are placing a Superpowers plugin checkout in the Copilot plugin directory and registering it in the local plugin index.
@@ -17,8 +19,8 @@ New-Item -ItemType Directory -Path $PluginRoot -Force | Out-Null
 ```
 
 3. Copy the contents of this repository into that folder.
-4. Confirm the plugin manifest exists at `$PluginRoot\.github\plugin\plugin.json`.
-5. Confirm the Copilot hook config exists at `$PluginRoot\hooks\hooks-copilot.json`.
+4. Confirm the plugin manifest exists at `$PluginRoot\plugins\superpowers-copilot-plugin\.claude-plugin\plugin.json`.
+5. Confirm skills exist under `$PluginRoot\plugins\superpowers-copilot-plugin\skills`.
 6. Build a correctly encoded plugin URI from your actual path:
 
 ```powershell
@@ -37,65 +39,58 @@ $PluginUri
 
 8. Restart VS Code on Windows.
 9. Open Copilot Chat and start a new session.
-10. Ask for something that normally triggers Superpowers, such as a feature idea or a bug fix.
-11. Confirm the session bootstrap content is loaded before implementation starts.
+10. Invoke this command first:
+
+```text
+/superpowers-copilot-plugin:using-superpowers
+```
+
+11. Then continue with your real task, for example:
+
+```text
+/superpowers-copilot-plugin:brainstorming
+```
 
 ## Smoke test (recommended)
 
-Run this from the installed plugin folder on Windows:
-
-```powershell
-cd $PluginRoot
-py -3 .\hooks\copilot\smoke-test.py
-```
-
-Expected output:
+Run this inside a fresh Copilot chat session:
 
 ```text
-smoke-test: OK
+/superpowers-copilot-plugin:using-superpowers
 ```
 
-If `py` is unavailable, use:
+Expected outcome:
 
-```powershell
-python .\hooks\copilot\smoke-test.py
+The response acknowledges the Superpowers skill system and workflow guidance.
+
+Then run:
+
+```text
+/superpowers-copilot-plugin:brainstorming
 ```
 
-## Optional debug logging
+The assistant should enter brainstorming workflow without any SessionStart warnings.
 
-If session-start bootstrap is not appearing, enable hook debug logging before launching VS Code.
+## Troubleshooting
 
-PowerShell:
+If commands are not available in chat:
 
-```powershell
-$env:SUPERPOWERS_COPILOT_HOOK_DEBUG = Join-Path $env:TEMP "superpowers-copilot-hook.log"
-```
+1. Confirm plugin is enabled in VS Code Plugins panel.
+2. Reload window from command palette.
+3. Reinstall from source `aruruka/superpowers-copilot-plugin`.
+4. Ensure the installed plugin manifest has no `hooks` key.
 
-Then start VS Code from the same shell and reproduce startup. Inspect the log:
-
-```powershell
-Get-Content $env:SUPERPOWERS_COPILOT_HOOK_DEBUG -Tail 50
-```
-
-When done, unset the variable:
-
-```powershell
-Remove-Item Env:SUPERPOWERS_COPILOT_HOOK_DEBUG
-```
+If you still see SessionStart warnings, you likely have a stale installed plugin copy. Remove and reinstall the plugin.
 
 ## File map
 
-- `.github/plugin/plugin.json` - Copilot plugin manifest.
-- `hooks/hooks-copilot.json` - Session-start hook registration.
-- `hooks/copilot/run-hook.cmd` - Copilot session-start wrapper that resolves `py -3` or `python`.
-- `hooks/copilot/session-start.py` - Python bootstrap that injects the `using-superpowers` skill into Copilot context.
-- `hooks/copilot/smoke-test.py` - Local validation for hook output format and required context snippets.
-- `skills/using-superpowers/SKILL.md` - Bootstrap skill content loaded at session start.
+- `plugins/superpowers-copilot-plugin/.claude-plugin/plugin.json` - Copilot plugin manifest (hook-free).
+- `plugins/superpowers-copilot-plugin/skills/using-superpowers/SKILL.md` - Bootstrap guidance skill to run manually at thread start.
 - `skills/*/SKILL.md` - Superpowers skills available to Copilot after install.
 - `README.md` - Human-facing install entry point and harness list.
 
 ## Notes
 
-- This skeleton uses a Python hook so the bootstrap logic is easy to maintain and does not depend on Bash on Windows.
-- The hook reads the `using-superpowers` skill from the installed plugin checkout, so the repo copy on Windows must stay in sync with the files on disk.
+- This plugin intentionally avoids SessionStart hooks for cross-environment stability (Windows + WSL + remote).
+- Run `using-superpowers` manually at the start of each new thread.
 - If you already keep a mirrored copy under another Copilot plugin directory, recompute `$PluginUri` from that folder instead of editing URI encoding manually.

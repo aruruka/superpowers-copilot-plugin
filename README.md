@@ -141,6 +141,12 @@ already use it in another harness.
 
 GitHub Copilot in VS Code does not currently have an official Superpowers marketplace install flow. Use the manual plugin install path documented in [docs/copilot-vscode-manual-install.md](docs/copilot-vscode-manual-install.md).
 
+This custom plugin is hook-free for cross-environment stability. Start each new Copilot chat thread by running:
+
+```text
+/superpowers-copilot-plugin:using-superpowers
+```
+
 - If you want the shortest path, follow the copy/register steps in the manual install guide.
 - If you want the file layout first, jump to the [plugin file map](docs/copilot-vscode-manual-install.md#file-map).
 
