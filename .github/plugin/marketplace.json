@@ -12,7 +12,7 @@
     {
       "name": "superpowers-copilot-plugin",
       "description": "Custom Superpowers skills and hooks for GitHub Copilot in VS Code.",
-      "version": "5.1.1",
+      "version": "5.1.2",
       "source": "./plugins/superpowers-copilot-plugin"
     }
   ]
